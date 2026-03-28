@@ -1,32 +1,19 @@
 package com.phdprogress.phd_progress.service;
 
-import com.phdprogress.phd_progress.entity.User;
-import com.phdprogress.phd_progress.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import com.phdprogress.phd_progress.dto.user.UserRequest;
+import com.phdprogress.phd_progress.dto.user.UserResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+public interface UserService {
 
-@Service
-public class UserService {
+    UserResponse createUser(UserRequest request);
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    Page<UserResponse> getAllUsers(Pageable pageable);
 
-    public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    UserResponse getUserById(Long id);
 
-    public User saveUser(User user) {
+    UserResponse updateUser(Long id, UserRequest request);
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        return userRepository.save(user);
-    }
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
+    void deleteUser(Long id);
 }

@@ -1,67 +1,38 @@
 package com.phdprogress.phd_progress.service;
 
-import com.phdprogress.phd_progress.entity.ProgressSubmission;
-import com.phdprogress.phd_progress.repository.ProgressSubmissionRepository;
-import org.springframework.stereotype.Service;
+import com.phdprogress.phd_progress.dto.submission.ProgressSubmissionRequest;
+import com.phdprogress.phd_progress.dto.submission.ProgressSubmissionResponse;
+import com.phdprogress.phd_progress.dto.submission.SubmissionFileDownload;
+import com.phdprogress.phd_progress.entity.SubmissionStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+public interface ProgressSubmissionService {
 
-@Service
-public class ProgressSubmissionService {
+    ProgressSubmissionResponse createSubmission(ProgressSubmissionRequest request);
 
-    private final ProgressSubmissionRepository repository;
+    Page<ProgressSubmissionResponse> getAllSubmissions(SubmissionStatus status, Long studentId, Pageable pageable);
 
-    public ProgressSubmissionService(ProgressSubmissionRepository repository) {
-        this.repository = repository;
-    }
+    Page<ProgressSubmissionResponse> getMySubmissions(SubmissionStatus status, Pageable pageable);
 
-    public ProgressSubmission createSubmission(ProgressSubmission submission) {
-        submission.setStatus("PENDING");
-        return repository.save(submission);
-    }
+    ProgressSubmissionResponse getSubmissionById(Long id);
 
-    public List<ProgressSubmission> getAllSubmissions() {
-        return repository.findAll();
-    }
+    ProgressSubmissionResponse updateSubmission(Long id, ProgressSubmissionRequest request);
 
-    public ProgressSubmission advisorApprove(Long id, String comments) {
+    void deleteSubmission(Long id);
 
-        ProgressSubmission submission =
-                repository.findById(id).orElseThrow();
+    ProgressSubmissionResponse uploadFile(Long id, MultipartFile file);
 
-        submission.setAdvisorStatus("APPROVED");
-        submission.setAdvisorComments(comments);
+    SubmissionFileDownload downloadFile(Long id);
 
-        return repository.save(submission);
-    }
+    ProgressSubmissionResponse submit(Long id);
 
-    public ProgressSubmission directorApprove(Long id, String comments) {
+    ProgressSubmissionResponse advisorApprove(Long id, String comments);
 
-        ProgressSubmission submission =
-                repository.findById(id).orElseThrow();
+    ProgressSubmissionResponse advisorReject(Long id, String comments);
 
-        if (!"APPROVED".equals(submission.getAdvisorStatus())) {
-            throw new RuntimeException("Advisor must approve first");
-        }
+    ProgressSubmissionResponse directorApprove(Long id, String comments);
 
-        submission.setDirectorStatus("APPROVED");
-        submission.setDirectorComments(comments);
-        submission.setStatus("APPROVED");
-
-        return repository.save(submission);
-    }
-
-    public ProgressSubmission advisorReject(Long id, String comments) {
-
-        ProgressSubmission submission =
-                repository.findById(id).orElseThrow();
-
-        submission.setAdvisorStatus("REJECTED");
-        submission.setAdvisorComments(comments);
-        submission.setStatus("REJECTED");
-
-        return repository.save(submission);
-    }
-
-
+    ProgressSubmissionResponse directorReject(Long id, String comments);
 }

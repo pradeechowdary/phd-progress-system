@@ -16,4 +16,5 @@ export const navigationItems: NavigationItem[] = [
   { label: "Final Queue", to: "/director/submissions", roles: ["DIRECTOR"] },
   { label: "Admin Dashboard", to: "/admin/dashboard", roles: ["ADMIN"] },
   { label: "All Submissions", to: "/admin/submissions", roles: ["ADMIN"] },
+  { label: "Users", to: "/admin/users", roles: ["ADMIN"] },
 ];

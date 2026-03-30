@@ -11,7 +11,7 @@ export function decodeToken(token: string): SessionUser | null {
     const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
     const parsed = JSON.parse(window.atob(normalized)) as JwtPayload;
     const roles = (parsed.roles ?? [])
-      .map((role) => role.replace("ROLE_", "") as UserRole)
+      .map((role) => role.replace("ROLE_", "").toUpperCase() as UserRole)
       .filter(Boolean);
 
     if (!parsed.sub || roles.length === 0) {

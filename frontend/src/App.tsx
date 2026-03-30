@@ -17,6 +17,7 @@ import DirectorSubmissionReviewPage from "./pages/director/DirectorSubmissionRev
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminSubmissionsPage from "./pages/admin/AdminSubmissionsPage";
 import AdminSubmissionDetailPage from "./pages/admin/AdminSubmissionDetailPage";
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
 
 export default function App() {
   return (
@@ -51,6 +52,7 @@ export default function App() {
             <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
             <Route path="/admin/submissions" element={<AdminSubmissionsPage />} />
             <Route path="/admin/submissions/:id" element={<AdminSubmissionDetailPage />} />
+            <Route path="/admin/users" element={<AdminUsersPage />} />
           </Route>
         </Route>
       </Route>

@@ -2,8 +2,27 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import axios from "axios";
 import { createSubmission } from "../../api/submissions";
 import DashboardHeader from "../shared/DashboardHeader";
+
+function parseOptionalPositiveInteger(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  if (!/^\d+$/.test(trimmed)) {
+    throw new Error("Advisor ID and Director ID must be numeric database IDs.");
+  }
+
+  const parsed = Number(trimmed);
+  if (parsed <= 0) {
+    throw new Error("Advisor ID and Director ID must be positive numbers.");
+  }
+
+  return parsed;
+}
 
 export default function CreateSubmissionPage() {
   const navigate = useNavigate();
@@ -18,8 +37,16 @@ export default function CreateSubmissionPage() {
       toast.success("Submission draft created");
       navigate(`/student/submissions/${data.id}`);
     },
-    onError() {
-      toast.error("Failed to create submission");
+    onError(error) {
+      if (axios.isAxiosError(error)) {
+        const message =
+          (error.response?.data as { message?: string } | undefined)?.message ??
+          "Failed to create submission";
+        toast.error(message);
+        return;
+      }
+
+      toast.error(error instanceof Error ? error.message : "Failed to create submission");
     },
   });
 
@@ -35,12 +62,16 @@ export default function CreateSubmissionPage() {
         className="panel grid gap-5 p-6"
         onSubmit={(event) => {
           event.preventDefault();
-          mutation.mutate({
-            title,
-            description,
-            advisorId: advisorId ? Number(advisorId) : undefined,
-            directorId: directorId ? Number(directorId) : undefined,
-          });
+          try {
+            mutation.mutate({
+              title: title.trim(),
+              description: description.trim(),
+              advisorId: parseOptionalPositiveInteger(advisorId),
+              directorId: parseOptionalPositiveInteger(directorId),
+            });
+          } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Invalid form values");
+          }
         }}
       >
         <div>
@@ -61,11 +92,13 @@ export default function CreateSubmissionPage() {
           <div>
             <label className="mb-2 block text-sm font-semibold text-ink">Advisor ID</label>
             <input className="field" value={advisorId} onChange={(event) => setAdvisorId(event.target.value)} />
+            <p className="mt-2 text-xs text-slate">Optional. Must be a numeric user ID, not a username.</p>
           </div>
 
           <div>
             <label className="mb-2 block text-sm font-semibold text-ink">Director ID</label>
             <input className="field" value={directorId} onChange={(event) => setDirectorId(event.target.value)} />
+            <p className="mt-2 text-xs text-slate">Optional. Must be a numeric user ID, not a username.</p>
           </div>
         </div>
 

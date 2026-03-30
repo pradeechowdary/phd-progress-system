@@ -19,7 +19,7 @@ export interface ProgressSubmission {
   id: number;
   title: string;
   description: string;
-  status: SubmissionStatus;
+  status?: SubmissionStatus | null;
   advisorStatus?: string;
   directorStatus?: string;
   advisorComments?: string;
